@@ -1,196 +1,180 @@
 # Geometric Transformations Using OpenCV
 
----
-
-## Aim
+## AIM
 
 To write a Python program using OpenCV to perform various geometric transformations on an image.
 
 The program performs the following operations:
 
-- Image Translation  
-- Image Scaling (Resizing)  
-- Image Shearing  
-- Image Reflection (Flipping)  
-- Image Rotation  
+1. Image Translation
+2. Image Scaling (Resizing)
+3. Image Shearing
+4. Image Reflection (Flipping)
+5. Image Rotation
 
----
+## SOFTWARE REQUIRED
 
-##  Software Used
+- Anaconda – Python 3.7
+- Jupyter Notebook / VS Code
+- OpenCV (`cv2`)
+- NumPy
+- Matplotlib
 
-- Anaconda – Python 3.7  
-- Jupyter Notebook / VS Code  
-- OpenCV (`cv2`)  
-- NumPy  
-- Matplotlib  
+## ALGORITHM
 
----
+**Step 1:** Import the required libraries: OpenCV, NumPy, and Matplotlib.
 
-##  Algorithm
+**Step 2:** Read the input image `images.jpg` in color mode and convert it from BGR to RGB format.
 
-### Step 1:
-Import the required libraries: OpenCV, NumPy, and Matplotlib.
+**Step 3: Image Translation**
 
-### Step 2:
-Read the input image in color mode.
+- Create a translation matrix to shift the image.
+- Move the image 50 pixels to the right and 80 pixels down.
+- Apply transformation using `cv2.warpAffine()`.
+- Display original and translated images.
 
-### Step 3: Image Translation
-- Create a translation matrix to shift the image  
-- Move the image 50 pixels to the right and 80 pixels down  
-- Apply transformation using `cv2.warpAffine()`  
-- Display original and translated images  
+**Step 4: Image Scaling**
 
-### Step 4: Image Scaling
-- Resize the image to 0.5× (downscale)  
-- Resize the image to 2× (upscale)  
-- Use `cv2.resize()`  
-- Display original, downscaled, and upscaled images  
+- Resize the image to 0.5× (downscale).
+- Resize the image to 2× (upscale).
+- Use `cv2.resize()`.
+- Display original, downscaled, and upscaled images.
 
-### Step 5: Image Shearing
-- Create transformation matrices for:
-  - Horizontal shearing  
-  - Vertical shearing  
-- Apply transformations using `cv2.warpAffine()`  
-- Display original and sheared images  
+**Step 5: Image Shearing**
 
-### Step 6: Image Reflection
-- Perform flipping using `cv2.flip()`:
-  - Horizontal reflection  
-  - Vertical reflection  
-  - Both axes  
-- Display all reflected images  
+- Create transformation matrices for horizontal and vertical shearing.
+- Apply transformations using `cv2.warpAffine()`.
+- Adjust output dimensions to avoid cutting off the sheared image.
+- Display original and sheared images.
 
-### Step 7: Image Rotation
-- Create rotation matrices for:
-  - 45° rotation  
-  - 90° rotation  
-- Use `cv2.getRotationMatrix2D()` and `cv2.warpAffine()`  
-- Display original and rotated images  
+**Step 6: Image Reflection**
 
----
+Perform flipping using `cv2.flip()`:
 
-##  Program
-~~~
-# Step 1: Import the required libraries: OpenCV, NumPy, and Matplotlib[cite: 5].
+- Horizontal reflection.
+- Vertical reflection.
+- Both-axis reflection.
+
+Display all reflected images.
+
+**Step 7: Image Rotation**
+
+- Create rotation matrices for 45° and 90° rotation.
+- Use `cv2.getRotationMatrix2D()` and `cv2.warpAffine()`.
+- Display original and rotated images.
+
+## PROGRAM DEVELOPED BY
+
+**NAME:** VARUN A
+
+**REG NO:** 212224240178
+
+## PROGRAM
+
+### 1. Import the required libraries.
+
+```python
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+```
 
-# Step 2: Read the input image (e.g., image.jpg)[cite: 5].
-image_bgr = cv2.imread('images.jpg')
+### 2. Create a helper function to display multiple images.
 
-# Step 3: Convert the image from BGR to RGB format for display[cite: 5].
-image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+```python
+def show_images(titles, images, rows, cols):
+    plt.figure(figsize=(15, 5 * rows))
+    for i in range(len(images)):
+        plt.subplot(rows, cols, i + 1)
+        plt.imshow(images[i])
+        plt.title(titles[i])
+        plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+```
 
-# Step 4: Apply Averaging Filter using cv2.blur()[cite: 5].
-# Using a 5x5 kernel here for standard blurring
-avg_filter = cv2.blur(image_rgb, (5, 5))
+### 3. Read the input image and convert BGR to RGB format.
 
-# Step 5: Apply Weighted Averaging Filter using a custom kernel with cv2.filter2D()[cite: 5].
-# Defining a standard 3x3 weighted averaging kernel
-kernel_weighted = np.array([[1, 2, 1],
-                            [2, 4, 2],
-                            [1, 2, 1]]) / 16.0
-weighted_avg_filter = cv2.filter2D(image_rgb, -1, kernel_weighted)
+```python
+image = cv2.imread('images.jpg')
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+rows, cols, channels = image_rgb.shape
+```
 
-# Step 6: Apply Gaussian Filter using cv2.GaussianBlur()[cite: 4].
-gaussian_filter = cv2.GaussianBlur(image_rgb, (5, 5), 0)
+### 4. Perform Image Translation.
 
-# Step 7: Apply Median Filter using cv2.medianBlur()[cite: 4].
-median_filter = cv2.medianBlur(image_rgb, 5)
+```python
+tx, ty = 50, 80
+M_translation = np.float32([[1, 0, tx], [0, 1, ty]])
+translated_image = cv2.warpAffine(image_rgb, M_translation, (cols, rows))
 
-# Step 8: Apply Laplacian Sharpening using Kernel with cv2.filter2D()[cite: 4].
-# Defining a standard 3x3 Laplacian sharpening kernel
-kernel_sharpening = np.array([[0, -1, 0],
-                              [-1, 5, -1],
-                              [0, -1, 0]])
-laplacian_sharpen = cv2.filter2D(image_rgb, -1, kernel_sharpening)
+show_images(['Original Image', 'Translated (Right 50, Down 80)'],
+            [image_rgb, translated_image], 1, 2)
+```
 
-# Step 9: Convert image to grayscale and apply Laplacian Operator using cv2.Laplacian()[cite: 4].
-image_gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
-laplacian_operator = cv2.Laplacian(image_gray, cv2.CV_64F)
+### 5. Perform Image Scaling (Resizing).
 
-# Step 10: Display all filtered images using a grid layout for comparison[cite: 4].
-plt.figure(figsize=(15, 10))
+```python
+downscaled_image = cv2.resize(image_rgb, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+upscaled_image = cv2.resize(image_rgb, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
 
-plt.subplot(3, 3, 1)
-plt.imshow(image_rgb)
-plt.title('Original Image')
-plt.axis('off')
+show_images(['Original Image', 'Downscaled (0.5x)', 'Upscaled (2x)'],
+            [image_rgb, downscaled_image, upscaled_image], 1, 3)
+```
 
-plt.subplot(3, 3, 2)
-plt.imshow(avg_filter)
-plt.title('Averaging Filter')
-plt.axis('off')
+### 6. Perform Image Shearing.
 
-plt.subplot(3, 3, 3)
-plt.imshow(weighted_avg_filter)
-plt.title('Weighted Averaging Filter')
-plt.axis('off')
+```python
+shx, shy = 0.2, 0.2
+M_shear_x = np.float32([[1, shx, 0], [0, 1, 0]])
+M_shear_y = np.float32([[1, 0, 0], [shy, 1, 0]])
 
-plt.subplot(3, 3, 4)
-plt.imshow(gaussian_filter)
-plt.title('Gaussian Filter')
-plt.axis('off')
+sheared_x = cv2.warpAffine(image_rgb, M_shear_x, (int(cols + rows * shx), rows))
+sheared_y = cv2.warpAffine(image_rgb, M_shear_y, (cols, int(rows + cols * shy)))
 
-plt.subplot(3, 3, 5)
-plt.imshow(median_filter)
-plt.title('Median Filter')
-plt.axis('off')
+show_images(['Original Image', 'Horizontally Sheared', 'Vertically Sheared'],
+            [image_rgb, sheared_x, sheared_y], 1, 3)
+```
 
-plt.subplot(3, 3, 6)
-plt.imshow(laplacian_sharpen)
-plt.title('Laplacian Sharpening (Kernel)')
-plt.axis('off')
+### 7. Perform Image Reflection (Flipping).
 
-plt.subplot(3, 3, 7)
-plt.imshow(laplacian_operator, cmap='gray')
-plt.title('Laplacian Operator (Grayscale)')
-plt.axis('off')
+```python
+flip_h = cv2.flip(image_rgb, 1)
+flip_v = cv2.flip(image_rgb, 0)
+flip_both = cv2.flip(image_rgb, -1)
 
-plt.tight_layout()
-plt.show()
-~~~
+show_images(['Original Image', 'Horizontally Flipped', 'Vertically Flipped', 'Both-axis Flipped'],
+            [image_rgb, flip_h, flip_v, flip_both], 1, 4)
+```
 
-### Developed By:
-**Name:** Varun Aravamudhan
+### 8. Perform Image Rotation.
 
-### Register No:
-212224240178
----
+```python
+center = (cols // 2, rows // 2)
 
-##  Output
+M_rot_45 = cv2.getRotationMatrix2D(center, 45, 1.0)
+M_rot_90 = cv2.getRotationMatrix2D(center, 90, 1.0)
 
-<img width="1405" height="777" alt="image" src="https://github.com/user-attachments/assets/6efa8695-92c2-4dbc-bee3-e2793555fe74" />
+rotated_45 = cv2.warpAffine(image_rgb, M_rot_45, (cols, rows))
+rotated_90 = cv2.warpAffine(image_rgb, M_rot_90, (cols, rows))
+
+show_images(['Original Image', '45° Rotated', '90° Rotated'],
+            [image_rgb, rotated_45, rotated_90], 1, 3)
+```
+
+## OUTPUT
+
+<img width="1257" height="370" alt="Screenshot 2026-11-17 090656" src="https://github.com/user-attachments/assets/0bada6ba-c3ec-49bb-9dd0-9ab8cddb5bc7" />
+
+<img width="1397" height="270" alt="Screenshot 2026-11-17 090711" src="https://github.com/user-attachments/assets/a13ce463-1df4-48d9-b29b-489049ebd130" />
+
+<img width="1286" height="556" alt="Screenshot 2026-11-17 090722" src="https://github.com/user-attachments/assets/bf465006-7dd7-4419-a6d3-5ff3a8c51944" />
+
+<img width="1506" height="277" alt="Screenshot 2026-11-17 090728" src="https://github.com/user-attachments/assets/3e93b993-d355-4a88-9df7-cb9bf5b4547e" />
 
 
-### Image Translation
-- Original image is displayed  
-- Translated image (shifted right and down) is displayed  
 
-### Image Scaling
-- Original image is displayed  
-- Downscaled image (0.5×) is displayed  
-- Upscaled image (2×) is displayed  
 
-### Image Shearing
-- Original image is displayed  
-- Horizontally sheared image is displayed  
-- Vertically sheared image is displayed  
+## RESULT
 
-### Image Reflection
-- Original image is displayed  
-- Horizontally flipped image is displayed  
-- Vertically flipped image is displayed  
-- Both-axis flipped image is displayed  
-
-### Image Rotation
-- Original image is displayed  
-- 45° rotated image is displayed  
-- 90° rotated image is displayed  
-
----
-
-##  Result
-
-Thus, various geometric transformations such as translation, scaling, shearing, reflection, and rotation are successfully performed using OpenCV. These transformations demonstrate how images can be spatially manipulated for different computer vision applications.
+Thus, various geometric transformations such as translation, scaling, shearing, reflection, and rotation were successfully performed using OpenCV. These transformations demonstrate how images can be spatially manipulated for different computer vision applications.
